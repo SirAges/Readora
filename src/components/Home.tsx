@@ -2,27 +2,22 @@
 // import BottomNav from "@/components/BottomNav";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
-
 import { redirect } from "next/navigation";
-import { useRef } from "react";
+import { useAuth } from "@/hooks/useAuth";
 const Home = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const scrollableDivRef = useRef(null);
-  const isSignedIn = true;
-  if (!isSignedIn) {
-    redirect("/auth/sign-in");
-  }
+  const { isSignedIn,userId } = useAuth();
+  if (!isSignedIn) redirect("/auth/sign-in");
   return (
     <div className="flex h-full w-full">
       <Sidebar />
       <div className="flex flex-col w-full">
-        <Header />
+        <Header userId={userId!}/>
 
         <div
-          ref={scrollableDivRef}
           className="w-full flex flex-col items-center "
         >
           {children}

@@ -1,12 +1,13 @@
 import Searchbar from "@/components/Searchbar";
 import UserAvatar from "@/components/UserAvatar";
-import { Menu, Sun } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import Sidebar from "@/components/Sidebar";
+import Link from "next/link";
 
-const Header = () => {
+const Header = ({ userId }: { userId: number }) => {
   return (
-    <div className="flex w-full h-12 px-5 items-center justify-between">
+    <div className="sticky top-0 flex bg-white z-50  w-full h-12 px-5 items-center justify-between">
       <div className="flex gap-x-2">
         <Sheet>
           <SheetTrigger className="sm:hidden">
@@ -16,7 +17,7 @@ const Header = () => {
             />
           </SheetTrigger>
           <SheetContent
-            className="w-fit pt-2"
+            className="absolute inset-0 w-fit pt-2"
             side="left"
           >
             <Sidebar isMobile={true} />
@@ -24,13 +25,9 @@ const Header = () => {
         </Sheet>
         <Searchbar />
       </div>
-
-      <UserAvatar />
-
-      <Sun
-        className="flex sm:hidden"
-        strokeWidth={1.5}
-      />
+      <Link href={"/user"}>
+        <UserAvatar userId={userId} />
+      </Link>
     </div>
   );
 };

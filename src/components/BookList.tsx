@@ -13,15 +13,17 @@ const BookList = ({
 }) => {
   return (
     <div
-      className={cn("w-full flex flex-wrap justify-center gap-2", className)}
+      className={cn(
+        "w-full flex flex-wrap justify-center gap-2 md:gap-5",
+        className
+      )}
     >
-      {data.map(({ id, coverColor, coverUrl, title }) => {
+      {data.map(({ id, coverUrl, title }) => {
         return (
           <BookCard
             className={cn("w-32 h-52", bookCardStyle)}
             key={id}
             id={id}
-            coverColor={coverColor}
             coverUrl={coverUrl}
             title={title}
           />

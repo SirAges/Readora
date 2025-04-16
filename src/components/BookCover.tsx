@@ -1,35 +1,28 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
-import Rough from "@/assets/images/rough.png";
+import DemoImage from "@/assets/images/red_cover.png";
 
 interface Props {
   className?: string;
-  coverColor: string;
-  coverUrl: string;
+  coverUrl: File;
 }
 
-const BookCover = ({
-  coverColor,
-  coverUrl = "https://placehold.co/400x600.png",
-}: Props) => {
+const BookCover = ({ coverUrl }: Props) => {
   return (
-    <div
-      style={{ backgroundColor: coverColor }}
-      className="flex h-full w-full p-3  rounded-t-md"
-    >
-      <div className="h-full w-full relative shadow-lg">
+    <div className="flex h-full w-full p-3  rounded-t-md relative">
+      <div className="absolute inset-0 opacity-20 rounded-t-md">
         <Image
-          src={Rough}
+          src={coverUrl?.secure_url || DemoImage}
           alt="Book cover"
           fill
-          className="absolute z-20 object-fill opacity-20"
+          className="object-fill rounded-t-md"
           loading="lazy"
         />
-
+      </div>
+      <div className="h-full w-full relative shadow-lg">
         <Image
-          src={coverUrl}
+          src={coverUrl?.secure_url || DemoImage}
           alt="Book cover"
           fill
           className="object-fill"

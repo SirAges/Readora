@@ -93,8 +93,8 @@ function SheetContent({
       >
         {children}
         <SheetPrimitive.Close className="cursor-pointer ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-3 right-6 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
-          <XIcon className="size-4" />
-          <span className="sr-only">Close</span>
+          <XIcon className="size-4 right-0 hidden" />
+          <span className="sr-only hidden">Close</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
     </SheetPortal>

@@ -1,58 +1,39 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import * as z from "zod";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-const schema = z.object({
-  email: z.string().email(),
-});
+import AuthForm from "@/components/AuthForm";
+import { SignUpSchemaType } from "@/lib/schema";
+import { useSignInMutation } from "@/redux/features/auth/authApiSlice";
+import { toast } from "sonner";
+
 export default function Home() {
-  const method = useForm({ resolver: zodResolver(schema) });
-  const { handleSubmit, control } = method;
+  const [signIn, { isLoading }] = useSignInMutation();
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    alert(JSON.stringify(data));
+  const onSubmit = async (values: SignUpSchemaType) => {
+    try {
+      const { success, message } = await signIn(values).unwrap();
+      if (success) {
+        toast(message);
+      }
+    } catch (error) {
+      //@ts-expect-error error type
+      if (error?.data) {
+        //@ts-expect-error error type
+        toast(error?.data?.message);
+      }
+    }
   };
-
   return (
-    <main className="flex flex-col min-h-screen items-center p-20">
-      <Form {...method}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormField
-            control={control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="example@mail.com"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>enter your email</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button
-            type="submit"
-            className="cursor-pointer"
-          >
-            Submit
-          </Button>
-        </form>
-      </Form>
+    <main className="flex flex-col max-h-screen min-h-screen items-center justify-center">
+      <h1 className="font-semibold text-2xl py-4">Sign In</h1>
+      <AuthForm
+        //  @ts-expect-error type
+        onSubmit={onSubmit}
+        isLoading={isLoading}
+        defaultValues={{
+          email: "ekelestephens@gmail.com",
+          password: "password",
+        }}
+        name="sign_in"
+      />
     </main>
   );
 }

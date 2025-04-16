@@ -19,38 +19,49 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 const schema = z.object({
   search: z.string(),
 });
 const Searchbar = () => {
+  const [open, setOpen] = useState<boolean>(false);
+  const router = useRouter();
+
   const method = useForm({ resolver: zodResolver(schema) });
   const { handleSubmit, control } = method;
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    alert(JSON.stringify(data));
+  const onSubmit = async (value: z.infer<typeof schema>) => {
+    router.push(`/search?query=${value.search}`);
+    setOpen(false);
   };
 
   return (
-    <div className=" ">
-      <Sheet>
-        <SheetTrigger className="border-none ring-0 outline-0 flex text-xs gap-x-2 cursor-pointer">
+   
+      <Sheet
+        open={open}
+        onOpenChange={setOpen}
+      >
+        <SheetTrigger className="border-none ring-0 outline-0 flex text-xs gap-x-2 cursor-pointer truncate  flex-1 items-center">
           <Search
             size={14}
             strokeWidth={1.5}
           />
-          <p>search book name, author, edition...</p>
+          <p>search book name, author...</p>
         </SheetTrigger>
         <SheetContent
           side="top"
-          className="bg-popover flex flex-col items-center justify-center  py-20 px-10 "
+          className="absolute inset-0 max-h-3/5 bg-popover flex flex-col items-center justify-center  py-20 px-10 "
         >
           <div className="flex flex-col  md:w-2/5 items-center">
             <SheetHeader>
               <SheetTitle className="font-semibold text-center">
                 Search all books here
               </SheetTitle>
-              <SheetDescription className="text-center">
+              <SheetDescription className="text-center py-2">
                 La Book is loaded with all types of books from various authors
                 and publishers with upto date editions
               </SheetDescription>
@@ -65,39 +76,51 @@ const Searchbar = () => {
                   control={control}
                   name="search"
                   render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Search</FormLabel>
+                    <FormItem className="w-full gap-y-3">
+                      <FormLabel className="hidden">Search</FormLabel>
                       <FormControl>
                         <Input
                           autoComplete="off"
-                          className=" text-xs placeholder:text-secondary/60"
+                          className=" text-xs  py-3 placeholder:text-secondary/60"
                           placeholder="search books..."
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription>
+                      <FormDescription className="text-xs">
                         enter Book name, Author, Publisher, Year, Edition...
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <SheetClose
-                  type="submit"
-                  className="flex items-center justify-center w-12 h-12 bg-primary rounded-full cursor-pointer"
-                >
-                  <Search
-                    className="text-background"
-                    strokeWidth={2}
-                    size={24}
-                  />
-                </SheetClose>
+                <div className="flex items-center justify-center w-12 h-12 bg-primary rounded-full cursor-pointer">
+                  {method.watch("search") ? (
+                    <Button
+                      type="submit"
+                      className="flex items-center justify-center w-12 h-12 bg-primary rounded-full cursor-pointer"
+                    >
+                      <Search
+                        className="text-background"
+                        strokeWidth={2}
+                        size={24}
+                      />
+                    </Button>
+                  ) : (
+                    <SheetClose>
+                      <X
+                        className="text-white"
+                        strokeWidth={2}
+                        size={24}
+                      />
+                    </SheetClose>
+                  )}
+                </div>
               </form>
             </Form>
           </div>
         </SheetContent>
       </Sheet>
-    </div>
+ 
   );
 };
 export default Searchbar;

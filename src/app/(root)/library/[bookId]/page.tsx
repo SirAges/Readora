@@ -1,111 +1,335 @@
 "use client"; // import ColorBackground from "@/components/ColorBackground";
 
 import { useEffect, useState } from "react";
-import books from "@/lib/dummybooks.json";
-import Image from "next/image";
 import BookAuthor from "@/components/BookAuthor";
-import ImageCover from "@/assets/images/red_cover.png";
 import { Button } from "@/components/ui/button";
-import { ArrowDownRight, BookmarkPlus, Download, Share2 } from "lucide-react";
+import {
+  ArrowDownRight,
+  Download,
+  Edit,
+  Loader2,
+  Share2,
+  Star,
+} from "lucide-react";
+import {
+  useGetBookQuery,
+  useGetBookReviewsQuery,
+  useReviewBookMutation,
+} from "@/redux/features/book/bookApiSlice";
+import { useParams } from "next/navigation";
+import BookCard from "@/components/BookCard";
+import { cn } from "@/lib/utils";
+import UserAvatar from "@/components/UserAvatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { z } from "zod";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { useBorrowBookMutation } from "@/redux/features/borrow/borrowApiSlice";
+const schema = z.object({
+  comment: z.string(),
+  rating: z.coerce.number().min(1).max(5),
+});
+const Page = () => {
+  const [book, setBook] = useState<Book | null>(null);
+  const params = useParams();
+  const bookId = params.bookId;
+  const { data: review } = useGetBookReviewsQuery({ bookId });
+  const [reviewBook, { isLoading }] = useReviewBookMutation();
+  const { data, isFetching } = useGetBookQuery(bookId);
+  const [borrowBook, {}] = useBorrowBookMutation();
+  const method = useForm({ resolver: zodResolver(schema) });
+  const { handleSubmit, control, reset } = method;
+  const isFinished = book && book?.availableCopies < 1;
 
-const Page = ({ params }: { params: { bookId: string } }) => {
-  const [book, setBook] = useState<Book | undefined | null>(null);
-  const { bookId } = params;
+  const onSubmit = async (value: z.infer<typeof schema>) => {
+    try {
+      const data = await reviewBook({ bookId, value }).unwrap();
+
+      if (data?.success) {
+        toast(data.message);
+        reset();
+      }
+    } catch (error) {
+      //@ts-expect-error error type
+      if (error?.data) {
+        //@ts-expect-error error type
+        toast(error?.data?.message);
+      }
+    }
+  };
   useEffect(() => {
-    const fetchedBook = books.find(({ id }) => id === bookId);
-    if (fetchedBook?.id) {
-      //@ts-expect-error type error
-      setBook(fetchedBook);
+    if (data?.success) {
+      setBook(data.data);
     }
     return () => {};
-  }, [bookId]);
-  const isBorrowed = false;
+  }, [data]);
+  const handleBoookBorrow = async () => {
+    try {
+      const data = await borrowBook({
+        bookId: parseInt(bookId?.toString() as string),
+      }).unwrap();
+
+      if (data?.success) {
+        toast(data.message);
+      }
+    } catch (error) {
+      //@ts-expect-error error type
+      if (error?.data) {
+        //@ts-expect-error error type
+        toast(error?.data?.message);
+      }
+    }
+  };
+  if (isFetching) {
+    return (
+      <div className="w-full h-full min-h-[calc(100vh-3rem)] flex flex-col items-center justify-center">
+        <Loader2
+          size={100}
+          strokeWidth={1}
+          className="text-primary animate-spin"
+        />
+        <p>Fetching books from library...</p>
+      </div>
+    );
+  }
   return (
     book && (
-      <>
-        <main className="w-full h-full">
-          <div className="w-full grid grid-cols-1 md:grid-cols-2  md:h-[24vh] ">
-            <div className="flex flex-1 w-full relative items-center justify-center">
-              <div className="h-96 w-[80%] md:h-52 relative md:w-36 md:absolute md:-bottom-25 ">
-                <Image
-                  src={ImageCover}
-                  alt="Book cover"
-                  fill
-                  className="absolute z-20 object-fill"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-            <div className="py-5">
-              <div className="space-y-2 px-10 flex-1">
-                <h1 className="text-2xl">{book.title}</h1>
-                <BookAuthor />
-                <p className="text-xs  italic truncate max-w-96">
-                  {book.summary}
-                </p>
-              </div>
+      <main className="w-full max-h-[calc(90vh)] overflow-y-scroll hide-scrollbar">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2  md:h-[24vh] ">
+          <div className="flex flex-1 w-full relative items-center justify-center">
+            <div className=" w-[80%] flex items-center flex-col relative md:w-36 md:absolute md:-bottom-25 ">
+              <BookCard
+                id={book.id}
+                className={cn("w-36 h-56")}
+                key={book.id}
+                coverUrl={book.coverUrl}
+              />
             </div>
           </div>
+          <div className="py-5">
+            <div className="space-y-2 px-10 flex-1">
+              <h1 className="text-2xl">{book.title}</h1>
+              <BookAuthor
+                genre={book.genre}
+                author={book.author}
+              />
+              <p className="text-xs  italic truncate max-w-96">
+                {book.summary}
+              </p>
+            </div>
+          </div>
+        </div>
 
-          <div className="bg-foreground text-background md:mx-20 flex-1  px-2 py-2 rounded-md">
-            <div className="grid grid-cols-1 md:grid-cols-2 ">
-              <div className="flex-1"></div>
-              <div className="flex-1 flex justify-between items-center border-b py-2 px-5">
-                {isBorrowed ? (
-                  <Button>
-                    Start Reading <ArrowDownRight />
+        <div className="my-2 mx-2  bg-foreground text-background md:mx-20 flex-1  px-2 py-2 rounded-md">
+          <div className="grid grid-cols-1 md:grid-cols-2 ">
+            <div className="flex-1"></div>
+            <div>
+              <div className="flex-1  flex justify-between items-center border-b py-2 px-3">
+                {isFinished ? (
+                  <Button className="flex text-xs whitespace-nowrap">
+                    Book Unavailable
+                    <ArrowDownRight size={20} />
                   </Button>
                 ) : (
-                  <Button>
+                  <Button
+                    onClick={handleBoookBorrow}
+                    className="flex text-xs whitespace-nowrap text-white"
+                  >
                     Borrow Book <ArrowDownRight />
                   </Button>
                 )}
-                <div className="flex items-center space-x-2 text-background">
-                  <Download />
+                <div className="flex flex-1 justify-end items-center gap-x-2 text-background ">
+                  {book.ebookUrl && <Download />}
                   <Share2 />
-                  <BookmarkPlus />
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 md:pt-14 px-10 ">
-              <div className="py-2 space-y-2 md:pr-10">
-                <h3 className="font-semibold text-md">Description</h3>
-                <p className="text-xs text-justify">{book.description}</p>
-                <p className="font-semibold text-md">
-                  <span className="text-primary px-1 ">3.8</span>/ 455 Reviews
-                </p>
-                <div className="space-y-2 ">
-                  {Array.from({ length: 3 }, (_, i) => (
-                    <div key={i}>
-                      <div className="flex space-x-2 items-center">
-                        <h1 className="font-semibold text-xs">Roberto mark</h1>
-                        <p className="text-primary text-xs">4.5</p>
-                      </div>
-                      <p className="text-xs">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                  <Popover>
+                    <PopoverTrigger className="cursor-pointer">
+                      <Edit />
+                    </PopoverTrigger>
+                    <PopoverContent className="px-2 py-2 mx-4 min-w-56 max-w-56">
+                      <Form {...method}>
+                        <form
+                          className="flex flex-1 items-center flex-col gap-y-3"
+                          onSubmit={handleSubmit(onSubmit)}
+                        >
+                          <FormField
+                            control={control}
+                            name="comment"
+                            render={({ field }) => (
+                              <FormItem className="w-full gap-y-3">
+                                <FormLabel className="">Comment</FormLabel>
+                                <FormControl>
+                                  <Textarea
+                                    rows={5}
+                                    autoComplete="off"
+                                    className="text-xs  py-3 placeholder:text-secondary/60"
+                                    placeholder="search books..."
+                                    {...field}
+                                  />
+                                </FormControl>
 
-              <div className="px-5 space-y-2">
-                <h3 className="font-semibold text-md">Editors</h3>
-                <p className="text-xs">
-                  JK Rowling (Author), Christopher Roset , Alena Castabon, Steve
-                  Kong
-                </p>
-                <h3 className="font-semibold text-md">Language</h3>
-                <p className="text-xs">Standard English (USA)</p>
-                <h3 className="font-semibold text-md">Paperback</h3>
-                <p className="text-xs">Paper Textured Full Color, 365 Pages</p>
-                <p className="text-xs">ISBN: 443 3 53556 598 13</p>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={control}
+                            name="rating"
+                            render={({ field }) => (
+                              <FormItem className="w-full gap-y-3">
+                                <div className="flex items-center w-full gap-x-2">
+                                  <div className=" max-w-12">
+                                    <FormLabel className="hidden">
+                                      Rating
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        autoComplete="off"
+                                        type="number"
+                                        min={1}
+                                        max={5}
+                                        step={1}
+                                        className="text-xs px-2 py-3 placeholder:text-secondary/60"
+                                        placeholder="4"
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                  </div>
+                                  <Button
+                                    type="submit"
+                                    className="cursor-pointer w-full font-semibold text-white capitalize"
+                                  >
+                                    {isLoading ? (
+                                      <p className="flex items-center justify-center">
+                                        <Loader2 className="animate-spin " />
+                                      </p>
+                                    ) : (
+                                      "Review"
+                                    )}
+                                  </Button>
+                                </div>
+
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </form>
+                      </Form>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+              <div className="flex items-center justify-between flex-wrap gap-x-2 gap-y-2">
+                <p className="text-xs">{book.copies} copies</p>
+                <p className="text-xs">{book.availableCopies} available</p>
+                <p className="text-xs">{book.pages} pages</p>
+                <p className="text-xs">since {book.year}</p>
+                <p className="text-xs">{book.status}</p>
+                <p className="text-xs">{book.borrowCount} borrowed</p>
               </div>
             </div>
           </div>
-        </main>
-        {/* <ColorBackground orientation="bottom" /> */}
-      </>
+          <div className="grid grid-cols-1 md:grid-cols-2 md:pt-14 px-10 ">
+            <div className="py-2 space-y-2 md:pr-10">
+              <h3 className="font-semibold text-md">Description</h3>
+              <p className="text-xs text-justify">{book.description}</p>
+
+              <div className="px-5 space-y-2">
+                <h3 className="font-semibold text-md">Publisher</h3>
+                <p className="text-xs">{book.publisher}</p>
+                <p className="text-xs">{book.series}</p>
+                <h3 className="font-semibold text-md">Language</h3>
+                <p className="text-xs">{book.language}</p>
+                <h3 className="font-semibold text-md capitalize">
+                  {book.bookFormat}
+                </h3>
+                {book.callNumber && (
+                  <p className="text-xs">Call Number:{book.callNumber}</p>
+                )}
+                <p className="text-xs">ISBN: {book.isbn}</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-y-2 border-t py-5">
+              {review?.data?.totalReviews > 0 && (
+                <>
+                  <h1>Reviews</h1>
+                  <div className="flex items-center gap-x-2">
+                    <div className="flex gap-x-1">
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <Star
+                          color="#f1a900"
+                          fill={
+                            i + 1 <= review?.data?.averageRating
+                              ? "#f1a900"
+                              : undefined
+                          }
+                          size={10}
+                          key={i}
+                        />
+                      ))}
+                    </div>
+
+                    <p className="text-primary text-xs">
+                      {review?.data?.averageRating}
+                    </p>
+                    <p className="font-semibold text-xs">/</p>
+                    <p className="font-semibold text-xs">
+                      {review?.data?.totalReviews} Review
+                      {review?.data?.totalReviews ? "s" : ""}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 max-h-60">
+                    {review.data.reviews.map(
+                      (
+                        {
+                          comment,
+                          rating,
+                          userId,
+                        }: { rating: string; comment: string; userId: number },
+                        i: number
+                      ) => (
+                        <div key={i}>
+                          <div className="flex space-x-2 items-center">
+                            <UserAvatar userId={userId} />
+                            <p className="text-primary text-xs">{rating}</p>
+                          </div>
+                          <p className="text-xs pl-10">{comment}</p>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </>
+              )}
+              {book.videoUrl && (
+                <>
+                  <h3 className="font-semibold text-md">Book Video</h3>
+                  <video
+                    className="h-56 w-full bg-gray-900"
+                    src={book.videoUrl}
+                  ></video>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
     )
   );
 };

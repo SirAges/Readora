@@ -147,14 +147,14 @@
   transform: rotateY(0deg);
 }
 
-.hide-scrollbar::-webkit-scrollbar{
+.hide-scrollbar::-webkit-scrollbar,html::-webkit-scrollbar{
 display: none;
 }
 
-.hide-scrollbar{
+.hide-scrollbar,html{
 scrollbar-width: none;
 }
 
-.hide-scrollbar{
+.hide-scrollbar,html{
 -ms-overflow-style: none;
 }

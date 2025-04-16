@@ -1,14 +1,16 @@
 "use client";
 import BookList from "@/components/BookList";
 import SectionCard from "@/components/SectionCard";
-import books from "@/lib/dummybooks.json";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, ArrowRight, ArrowUpDown } from "lucide-react";
+import { useGetBooksQuery } from "@/redux/features/book/bookApiSlice";
+import { ArrowLeft, ArrowRight, ArrowUpDown, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
+import genres from "@/lib/genres.json";
 const Page = () => {
-  const [allBooks, setAllBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
+  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState("desc");
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
   const genre = params.get("genre");
@@ -18,19 +20,35 @@ const Page = () => {
     router.push(`?${params.toString()}`);
   };
 
+  const { data, isFetching } = useGetBooksQuery(
+    {
+      page,
+      limit: 21,
+      genre,
+      sortBy: "title",
+      sort,
+    },
+    { refetchOnMountOrArgChange: false }
+  );
+
   useEffect(() => {
-    const filtered = books.filter((book) => genre === book.genre);
-    if (filtered.length > 0 && genre) {
-      //@ts-expect-error type error
-      setAllBooks(filtered);
-    } else {
-      //@ts-expect-error type error
-      setAllBooks(books);
+    if (data?.success) {
+      setBooks(data.data.book);
     }
-
     return () => {};
-  }, [genre]);
-
+  }, [data]);
+  if (isFetching) {
+    return (
+      <div className="w-full h-full min-h-[calc(100vh-3rem)] flex flex-col items-center justify-center">
+        <Loader2
+          size={100}
+          strokeWidth={1}
+          className="text-primary animate-spin"
+        />
+        <p>Fetching books from library...</p>
+      </div>
+    );
+  }
   return (
     <div className="w-full flex bg-muted max-h-[calc(100vh-3rem)] hide-scrollbar py-4 overflow-auto items-center flex-col px-2 space-y-2">
       <div className="py-3">
@@ -40,7 +58,7 @@ const Page = () => {
       </div>
       <div className="flex flex-col items-center w-full flex-1">
         <div className="flex py-2 flex-wrap">
-          {[...new Set(books.map((book) => book.genre))].map((g) => (
+          {genres.map((g) => (
             <p
               onClick={() => handleParamUpdate(g)}
               key={g}
@@ -58,6 +76,9 @@ const Page = () => {
           <div className="flex items-center justify-between py-2 sticky top-0 z-50">
             <div className="w-8 h-8 rounded-full flex items-center justify-center border bg-background/70">
               <ArrowUpDown
+                onClick={() =>
+                  setSort((prev) => (prev === "desc" ? "asc" : "desc"))
+                }
                 className="cursor-pointer"
                 size={14}
               />
@@ -65,12 +86,16 @@ const Page = () => {
             <div className="flex items-center gap-x-2">
               <div className="w-8 h-8 rounded-full flex items-center justify-center border bg-background/70">
                 <ArrowLeft
+                  onClick={() => setPage((prev) => (prev > 1 ? prev - 1 : 1))}
                   className="cursor-pointer"
                   size={14}
                 />
               </div>
               <div className="w-8 h-8 rounded-full flex items-center justify-center border bg-background/70">
                 <ArrowRight
+                  onClick={() =>
+                    setPage((prev) => data?.data?.nextPage || prev)
+                  }
                   className="cursor-pointer"
                   size={14}
                 />
@@ -78,7 +103,7 @@ const Page = () => {
             </div>
           </div>
 
-          <BookList data={allBooks.slice(1, 10)} />
+          <BookList data={books} />
         </SectionCard>
       </div>
     </div>

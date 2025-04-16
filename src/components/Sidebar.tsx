@@ -1,34 +1,42 @@
 "use client";
 import { Separator } from "./ui/separator";
-import {
-  LogOut,
-  MessageCircle,
-  Moon,
-  Sun,
-} from "lucide-react";
+import { Loader2, LogOut, MessageCircle, Moon, Sun, X } from "lucide-react";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { sidebarItem } from "@/lib/data";
+import { sidebarItem, socialLinks } from "@/lib/data";
 import { useTheme } from "next-themes";
+import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogTrigger,
-} from "./ui/alert-dialog";
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetTitle,
+  SheetClose,
+} from "./ui/sheet";
+import { Button } from "./ui/button";
+import { useSignOutMutation } from "@/redux/features/auth/authApiSlice";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const SideBar = ({ isMobile }: { isMobile?: boolean }) => {
   const { setTheme, theme } = useTheme();
   const isDark = theme === "dark";
   const pathname = usePathname();
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const fullPath = searchParams.toString()
+    ? `${pathname}?${searchParams.toString()}`
+    : pathname;
+
+  const [signOut, { isLoading }] = useSignOutMutation();
+  const handleSignOut = async () => {
+    await signOut("").unwrap();
+  };
+  const date = new Date();
+  const year = date.getFullYear();
   return (
     <div
       className={cn(
-        "sm:flex min-h-screen max-h-screen",
+        "sm:flex sticky top-0 max-h-screen min-h-screen",
         isMobile ? "" : "hidden"
       )}
     >
@@ -45,9 +53,10 @@ const SideBar = ({ isMobile }: { isMobile?: boolean }) => {
 
         <div className="flex flex-col flex-1 space-y-3 justify-between py-5">
           {sidebarItem.map(({ Icon, id, link, name }) => {
-            const isActive =
-              (link !== "/" && pathname.includes(link) && link.length > 1) ||
-              pathname === link;
+            const isActive = link.includes("?")
+              ? fullPath === link
+              : pathname === link && !searchParams.toString();
+
             return (
               <Link
                 className="flex items-center gap-x-2 cursor-pointer"
@@ -95,25 +104,56 @@ const SideBar = ({ isMobile }: { isMobile?: boolean }) => {
               {isDark ? "Dark mode on" : "Light mode on"}
             </p>
           </div>
-          <div
-            onClick={() => router.push("mailto:ekelestephen.design@gmail.com")}
-            className="flex cursor-pointer items-center gap-x-2"
-          >
-            <div className={cn("rounded bg-muted p-1")}>
-              <MessageCircle size={16} />
-            </div>
+          <Sheet>
+            <SheetTrigger>
+              <div className="flex cursor-pointer items-center gap-x-2">
+                <div className={cn("rounded bg-muted p-1")}>
+                  <MessageCircle size={16} />
+                </div>
 
-            <p
-              className={cn(
-                "capitalize text-sm hidden md:flex whitespace-nowrap"
-              )}
+                <p
+                  className={cn(
+                    "capitalize text-sm hidden md:flex whitespace-nowrap"
+                  )}
+                >
+                  Support
+                </p>
+              </div>
+            </SheetTrigger>
+            <SheetContent
+              side="bottom"
+              className="absolute inset-0 max-w-xs z-50 items-center"
             >
-              Support
-            </p>
-          </div>
+              <SheetTitle>Contact us</SheetTitle>
+              <div className="w-full gap-y-3 flex flex-col items-center px-3 py-3 flex-1">
+                {socialLinks.map(({ id, name, Icon }) => (
+                  <SheetClose
+                    className="w-full flex items-center cursor-pointer gap-x-3 bg-muted px-2 py-3 rounded-md "
+                    key={id}
+                  >
+                    <Icon
+                      strokeWidth={1.5}
+                      size={20}
+                      className="text-primary"
+                    />
+                    <p>{name}</p>
+                  </SheetClose>
+                ))}
+                <div className="rounded-full bg-primary flex items-center justify-center w-12 h-12 ">
+                  <SheetClose>
+                    <X
+                      size={20}
+                      className="text-white"
+                    />
+                  </SheetClose>
+                </div>
+              </div>
+              <p>copyright &copy; {year}</p>
+            </SheetContent>
+          </Sheet>
 
-          <AlertDialog>
-            <AlertDialogTrigger>
+          <Popover>
+            <PopoverTrigger>
               <div className="flex cursor-pointer items-center gap-x-2">
                 <div className={cn("rounded bg-muted p-1")}>
                   <LogOut size={16} />
@@ -127,12 +167,23 @@ const SideBar = ({ isMobile }: { isMobile?: boolean }) => {
                   Sign out
                 </p>
               </div>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogAction>OK</AlertDialogAction>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-            </AlertDialogContent>
-          </AlertDialog>
+            </PopoverTrigger>
+            <PopoverContent className="flex flex-col items-center w-fit">
+              <Button
+                disabled={isLoading}
+                onClick={handleSignOut}
+                className="text-white cursor-pointer"
+              >
+                {isLoading ? (
+                  <p className="flex items-center justify-center">
+                    <Loader2 className="animate-spin " />
+                  </p>
+                ) : (
+                  "Continue"
+                )}
+              </Button>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
