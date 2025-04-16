@@ -14,7 +14,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "../ui/chart";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 import {
   Select,

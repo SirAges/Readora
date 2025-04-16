@@ -15,7 +15,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "../ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   Select,
