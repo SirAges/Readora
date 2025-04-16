@@ -1,7 +1,7 @@
 import * as jose from "jose";
 const getJwtSecretKey = () => {
-  const secret = process.env.NEXT_PUBLIC_KEY;
-
+  const secret = process.env.ACCESS_TOKEN_SECRET;
+  console.log("secret", secret);
   if (!secret || secret.length === 0) {
     throw new Error("no secret key");
   }

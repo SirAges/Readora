@@ -1,6 +1,7 @@
 "use client";
 import { useAuth } from "@/hooks/useAuth";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 const AuthLayout = ({
   children,
@@ -11,6 +12,6 @@ const AuthLayout = ({
   if (isSignedIn) {
     redirect("/");
   }
-  return <main>{children}</main>;
+  return <Suspense>{children}</Suspense>;
 };
 export default AuthLayout;

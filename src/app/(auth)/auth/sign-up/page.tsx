@@ -6,7 +6,6 @@ import { toast } from "sonner";
 
 export default function Home() {
   const [signUp, { isLoading }] = useSignUpMutation();
-
   const onSubmit = async (values: SignUpSchemaType) => {
     try {
       const formData = new FormData();
@@ -16,6 +15,7 @@ export default function Home() {
       }
       const { success, message } = await signUp(formData).unwrap();
       if (success) {
+
         toast(message);
       }
     } catch (error) {

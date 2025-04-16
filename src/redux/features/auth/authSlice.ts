@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { CombinedState } from "@reduxjs/toolkit/query";
 const initialState = {
-  token:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsInJvbGUiOiJMSUJSQVJJQU4iLCJlbWFpbCI6ImVrZWxlMTlzdGVwaGVuOTZ1QGdtYWlsLmNvbSIsImlhdCI6MTc0NDcyMDc0NiwiZXhwIjoxNzQ0ODA3MTQ2fQ.4mW47j2De0xqkxX9zEEWrIZ4qjQXeGxXMgRTwpScEdo",
+  token: null,
 };
 const authSlice = createSlice({
   name: "auth",

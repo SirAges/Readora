@@ -87,7 +87,7 @@ const AuthForm = ({
                             <Input
                               //@ts-expect-error type
                               type={InputType[key]}
-                              className="py-2"
+                              className="py-3"
                               //@ts-expect-error type
                               placeholder={Placeholder[key]}
                               {...field}

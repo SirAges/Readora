@@ -28,10 +28,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     verifyEmail: builder.mutation({
-      query: (params) => ({
+      query: (value) => ({
         url: "/auth/verify-otp",
         method: "POST",
-        params,
+        body: value,
       }),
     }),
     refreshToken: builder.mutation({
