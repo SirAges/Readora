@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const Header = ({ userId }: { userId: number }) => {
   return (
-    <div className="sticky top-0 flex bg-white z-50  w-full h-12 px-5 items-center justify-between">
+    <div className="sticky top-0 flex bg-background z-50  w-full h-12 px-5 items-center justify-between">
       <div className="flex gap-x-2">
         <Sheet>
           <SheetTrigger className="sm:hidden">
