@@ -10,7 +10,6 @@ import {
 import { useGetUserQuery } from "@/redux/features/user/userApiSlice";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
-import DemoImage from "@/assets/images/idcard.jpg";
 import {
   Table,
   TableBody,
@@ -107,7 +106,7 @@ const Page = () => {
             <div className="w-full relative h-60 py-2">
               <Image
                 className="object-cover rounded-md"
-                src={DemoImage || user.idCardUrl.secure_url}
+                src={user.idCardUrl.secure_url}
                 alt="id card"
                 fill
               />

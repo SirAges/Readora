@@ -1,5 +1,7 @@
+import FallBack from "@/components/FallBack";
 import Home from "@/components/Home";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Readora",
@@ -11,6 +13,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  return <Home>{children}</Home>;
+  return (
+    <Suspense fallback={<FallBack />}>
+      <Home>{children}</Home>
+    </Suspense>
+  );
 }

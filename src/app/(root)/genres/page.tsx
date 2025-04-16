@@ -4,32 +4,24 @@ import SectionCard from "@/components/SectionCard";
 import { cn } from "@/lib/utils";
 import { useGetBooksQuery } from "@/redux/features/book/bookApiSlice";
 import { ArrowLeft, ArrowRight, ArrowUpDown, Loader2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import genres from "@/lib/genres.json";
+import Link from "next/link";
 const Page = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("desc");
   const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams.toString());
-  const genre = params.get("genre");
-  const router = useRouter();
-  const handleParamUpdate = (genre: string) => {
-    params.set("genre", genre);
-    router.push(`?${params.toString()}`);
-  };
+  const genre = searchParams.get("genre");
 
-  const { data, isFetching } = useGetBooksQuery(
-    {
-      page,
-      limit: 21,
-      genre,
-      sortBy: "title",
-      sort,
-    },
-    { refetchOnMountOrArgChange: false }
-  );
+  const { data, isFetching } = useGetBooksQuery({
+    page,
+    limit: 21,
+    genre,
+    sortBy: "title",
+    sort,
+  });
 
   useEffect(() => {
     if (data?.success) {
@@ -59,8 +51,8 @@ const Page = () => {
       <div className="flex flex-col items-center w-full flex-1">
         <div className="flex py-2 flex-wrap">
           {genres.map((g) => (
-            <p
-              onClick={() => handleParamUpdate(g)}
+            <Link
+              href={`/genres?genre=${g}`}
               key={g}
               className={cn(
                 "bg-muted rounded-md text-xs px-2 py-2 whitespace-nowrap cursor-pointer",
@@ -68,7 +60,7 @@ const Page = () => {
               )}
             >
               {g}
-            </p>
+            </Link>
           ))}
         </div>
 

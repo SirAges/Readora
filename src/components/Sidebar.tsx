@@ -23,8 +23,9 @@ const SideBar = ({ isMobile }: { isMobile?: boolean }) => {
   const isDark = theme === "dark";
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const fullPath = searchParams.toString()
-    ? `${pathname}?${searchParams.toString()}`
+  const stringSearchParams = searchParams.toString();
+  const fullPath = stringSearchParams
+    ? `${pathname}?${stringSearchParams}`
     : pathname;
 
   const [signOut, { isLoading }] = useSignOutMutation();
