@@ -20,6 +20,8 @@ import { FieldValue, FieldValues, useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import FilePicker from "./FilePicker";
+import { Label } from "./ui/label";
+import { usePersistStore } from "@/zustand/zStore";
 
 const Placeholder = {
   email: "example@mail.com",
@@ -57,100 +59,104 @@ const AuthForm = ({
   defaultValues: object | FieldValue<FieldValues> | undefined;
 }) => {
   const isSignIn = name === "sign_in";
+  const { persist, setPersist } = usePersistStore();
   const method = useForm({
     resolver: zodResolver(isSignIn ? signInSchema : signUpSchema),
     defaultValues,
   });
   const { handleSubmit, control } = method;
+
   return (
-    <div className=" flex w-full flex-col h-full items-center  max-sm:px-10 sm:px-40 md:px-10 lg:px-40">
-      <Form {...method}>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-y-4 w-full h-full  items-center justify-center"
-        >
-          <div className="flex w-full justify-center items-center h-full gap-x-10">
-            <div className="flex-1 max-w-md ">
-              {Object.keys(defaultValues).map(
-                (key) =>
-                  //@ts-expect-error indexing
-                  InputType[key] !== "file" && (
-                    <FormField
-                      key={key}
-                      control={control}
-                      name={key}
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          {/* @ts-expect-error type */}
-                          <FormLabel>{LabelText[key]}</FormLabel>
-                          <FormControl>
-                            <Input
-                              //@ts-expect-error type
-                              type={InputType[key]}
-                              className="py-3"
-                              //@ts-expect-error type
-                              placeholder={Placeholder[key]}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-destructive" />
-                        </FormItem>
-                      )}
-                    />
-                  )
-              )}
-            </div>
+    <Form {...method}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full md:w-1/2 lg:w-2/5  px-4 flex flex-col gap-y-4 h-full  items-center justify-center"
+      >
+        {Object.keys(defaultValues).map(
+          (key) =>
+            //@ts-expect-error indexing
+            InputType[key] !== "file" && (
+              <FormField
+                key={key}
+                control={control}
+                name={key}
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    {/* @ts-expect-error type */}
+                    <FormLabel>{LabelText[key]}</FormLabel>
+                    <FormControl>
+                      <Input
+                        //@ts-expect-error type
+                        type={InputType[key]}
+                        className="py-3"
+                        //@ts-expect-error type
+                        placeholder={Placeholder[key]}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-destructive" />
+                  </FormItem>
+                )}
+              />
+            )
+        )}
 
-            {defaultValues?.idCardUrl && (
-              <div className="flex-1 flex flex-col items-center">
-                <FilePicker
-                  key={"idCardUrl"}
-                  identifier={"idCardUrl"}
-                  label={LabelText["idCardUrl"]}
-                  type={InputType["idCardUrl"]}
-                  placeholder={Placeholder["idCardUrl"]}
-                  control={control}
-                />
-              </div>
-            )}
+        {defaultValues?.idCardUrl && (
+          <FilePicker
+            key={"idCardUrl"}
+            identifier={"idCardUrl"}
+            label={LabelText["idCardUrl"]}
+            type={InputType["idCardUrl"]}
+            placeholder={Placeholder["idCardUrl"]}
+            control={control}
+          />
+        )}
+        {isSignIn && (
+          <div className="w-full flex flex-1 gap-x-2">
+            <Input
+              type="checkbox"
+              checked={persist}
+              className="checked:text-primary w-5 h-5"
+              onChange={setPersist}
+            />
+            <Label>I trust this device</Label>
           </div>
-
-          {isSignIn ? (
-            <div className="flex items-center gap-x-2">
-              <p>Don&apos;t have an account</p>
-              <Link
-                href="sign-up"
-                className="text-primary"
-              >
-                Sign Up
-              </Link>
-            </div>
+        )}
+        {isSignIn ? (
+          <div className="flex items-center gap-x-2">
+            <p>Don&apos;t have an account</p>
+            <Link
+              href="sign-up"
+              className="text-primary"
+            >
+              Sign Up
+            </Link>
+          </div>
+        ) : (
+          <div className="flex items-center gap-x-2">
+            <p>Already have an account</p>
+            <Link
+              href="sign-in"
+              className="text-primary"
+            >
+              Sign In
+            </Link>
+          </div>
+        )}
+        <Button
+          type="submit"
+          className="cursor-pointer w-full font-semibold text-white capitalize"
+        >
+          {isLoading ? (
+            <p className="flex items-center justify-center">
+              <Loader2 className="animate-spin " />
+            </p>
           ) : (
-            <div className="flex items-center gap-x-2">
-              <p>Already have an account</p>
-              <Link
-                href="sign-in"
-                className="text-primary"
-              >
-                Sign In
-              </Link>
-            </div>
+            name.replace("_", " ")
           )}
-          <Button
-            type="submit"
-            className="max-w-md  cursor-pointer w-full font-semibold text-white capitalize"
-          >
-            {isLoading ? (
-              <p className="flex items-center justify-center">
-                <Loader2 className="animate-spin " />
-              </p>
-            ) : (
-              name.replace("_", " ")
-            )}
-          </Button>
-        </form>
-      </Form>
-    </div>
+        </Button>
+      </form>
+    </Form>
   );
 };
 export default AuthForm;

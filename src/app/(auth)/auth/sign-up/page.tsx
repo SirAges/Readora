@@ -15,7 +15,6 @@ export default function Home() {
       }
       const { success, message } = await signUp(formData).unwrap();
       if (success) {
-
         toast(message);
       }
     } catch (error) {
@@ -27,7 +26,7 @@ export default function Home() {
     }
   };
   return (
-    <main className="hide-scrollbar flex flex-col min-h-screen max-h-screen items-center justify-center py-4">
+    <main className="hide-scrollbar flex flex-col min-h-screen  overflow-y-scroll items-center justify-center py-10">
       <h1 className="font-semibold text-2xl py-4">Sign Up</h1>
       <AuthForm
         //  @ts-expect-error type

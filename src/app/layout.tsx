@@ -4,6 +4,7 @@ import ThemeProvider from "@/hooks/theme-provide";
 import StoreProvider from "@/components/StoreProvider";
 import { Toaster } from "@/components/ui/sonner";
 import localFont from "next/font/local";
+import AuthPersist from "@/components/AuthPersist";
 
 const ibmPlexSans = localFont({
   src: [
@@ -44,7 +45,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Toaster />
-            <div className=" min-h-screen">{children}</div>
+            <AuthPersist>
+              <main className=" min-h-screen">{children}</main>
+            </AuthPersist>
           </ThemeProvider>
         </StoreProvider>
       </body>

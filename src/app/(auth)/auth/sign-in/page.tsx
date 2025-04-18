@@ -16,7 +16,6 @@ export default function Home() {
     } catch (error) {
       //@ts-expect-error error type
       if (error?.data) {
-        console.log("error", error);
         //@ts-expect-error error type
         toast(error?.data?.message);
       }

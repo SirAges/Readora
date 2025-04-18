@@ -13,7 +13,6 @@ const HomePage = () => {
   const randomPage = useRef<number>(
     Math.floor(Math.random() * (max - min + 1)) + min
   );
-  console.log("randomPage", randomPage);
   const { data, isFetching } = useGetBooksQuery({
     page: randomPage.current,
     limit: 24,

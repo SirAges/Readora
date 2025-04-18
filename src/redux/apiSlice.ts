@@ -32,7 +32,11 @@ const baseQuery: BaseQueryFn<
     console.log("Access token expired, attempting refresh");
 
     const refreshResult = await baseQueryFunction(
-      { url: "/api/auth/refresh", method: "POST" },
+      {
+        url: "/auth/refresh-token",
+        method: "POST",
+       
+      },
       api,
       extraOptions
     );

@@ -12,7 +12,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
           if (data?.success) {
-            console.log("data.data", data.data);
             dispatch(setCredentials(data.data));
           }
         } catch (err) {
@@ -35,11 +34,20 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     refreshToken: builder.mutation({
-      query: (params) => ({
+      query: () => ({
         url: "/auth/refresh-token",
         method: "POST",
-        params,
       }),
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data?.success) {
+            dispatch(setCredentials(data.data));
+          }
+        } catch (err) {
+          console.log("err", err);
+        }
+      },
     }),
     signOut: builder.mutation({
       query: () => ({

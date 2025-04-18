@@ -85,7 +85,6 @@ const Page = () => {
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
-  console.log("borrows", borrows);
   if (isAdmin) {
     redirect("/admin");
   }
@@ -276,7 +275,6 @@ const Actions = ({ borrowId }: { borrowId: number }) => {
   const [isLoadingStatus, setIsLoadingStatus] = useState<string>("");
   const handleUpdateBorrowedBookStatus = async (status: string) => {
     setIsLoadingStatus(status);
-    console.log("status", status);
     try {
       const { success, message } = await updateBorrowedBookStatus({
         borrowId,

@@ -62,7 +62,7 @@ const Searchbar = () => {
                 Search all books here
               </SheetTitle>
               <SheetDescription className="text-center py-2">
-                La Book is loaded with all types of books from various authors
+                Readora is loaded with all types of books from various authors
                 and publishers with upto date editions
               </SheetDescription>
             </SheetHeader>

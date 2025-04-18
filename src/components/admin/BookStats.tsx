@@ -84,7 +84,6 @@ const BookStats = () => {
     month: { label: "Month: ", color: "var(--chart-1)" },
     count: { label: "Count: ", color: "var(--chart-1)" },
   } satisfies ChartConfig;
-  console.log("stats", stats);
   if (isFetching) {
     return (
       <div className="w-full h-full  px-2 flex flex-col items-center justify-center">

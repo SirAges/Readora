@@ -8,7 +8,6 @@ export default function Home() {
   const [createBook, { isLoading }] = useCreateBookMutation();
 
   const onSubmit = async (values: SignUpSchemaType) => {
-    console.log("values", values);
     try {
       const formData = new FormData();
       const entries = Object.entries(values);

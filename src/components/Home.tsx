@@ -2,15 +2,15 @@
 // import BottomNav from "@/components/BottomNav";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
-import { redirect } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+
 const Home = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const { isSignedIn,userId } = useAuth();
-  if (!isSignedIn) redirect("/auth/sign-in");
+  const { userId } = useAuth();
+  // if (!isSignedIn) redirect("/auth/sign-in");
   return (
     <div className="flex h-full w-full">
       <Sidebar />
