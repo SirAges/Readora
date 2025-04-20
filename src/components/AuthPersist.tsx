@@ -7,7 +7,6 @@ import { selectCurrentToken } from "@/redux/features/auth/authSlice";
 import { usePersistStore } from "@/zustand/zStore";
 import { redirect } from "next/navigation";
 import ScreenLoader from "./ScreenLoader";
-// import ScreenLoader from "./ScreenLoader";
 
 interface AuthPersistProps {
   children: ReactNode;
@@ -42,8 +41,6 @@ const AuthPersist = ({ children }: AuthPersistProps) => {
     verifyToken();
   }, [token, persist, refreshToken]);
 
-  console.log("token", token);
-  // Once token is confirmed or refreshed, render the app
   return (
     <>
       <ScreenLoader open={!authChecked && isLoading} />

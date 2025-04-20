@@ -3,11 +3,12 @@ import BookList from "@/components/BookList";
 import SectionCard from "@/components/SectionCard";
 import { cn } from "@/lib/utils";
 import { useGetBooksQuery } from "@/redux/features/book/bookApiSlice";
-import { ArrowLeft, ArrowRight, ArrowUpDown, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpDown } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import genres from "@/lib/genres.json";
 import Link from "next/link";
+import ScreenLoader from "@/components/ScreenLoader";
 const Page = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [page, setPage] = useState(1);
@@ -29,20 +30,10 @@ const Page = () => {
     }
     return () => {};
   }, [data]);
-  if (isFetching) {
-    return (
-      <div className="w-full h-full min-h-[calc(100vh-3rem)] flex flex-col items-center justify-center">
-        <Loader2
-          size={100}
-          strokeWidth={1}
-          className="text-primary animate-spin"
-        />
-        <p>Fetching books from library...</p>
-      </div>
-    );
-  }
+
   return (
     <div className="w-full flex bg-muted max-h-[calc(100vh-3rem)] hide-scrollbar py-4 overflow-auto items-center flex-col px-2 space-y-2">
+      <ScreenLoader open={isFetching} message={"Loading book by genre"} />
       <div className="py-3">
         <h1 className="text-3xl font-semibold ">
           Discover Books one Genre at a Time

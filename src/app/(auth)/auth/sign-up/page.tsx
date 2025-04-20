@@ -1,5 +1,6 @@
 "use client";
 import AuthForm from "@/components/AuthForm";
+import ScreenLoader from "@/components/ScreenLoader";
 import { SignUpSchemaType } from "@/lib/schema";
 import { useSignUpMutation } from "@/redux/features/auth/authApiSlice";
 import { toast } from "sonner";
@@ -27,6 +28,10 @@ export default function Home() {
   };
   return (
     <main className="hide-scrollbar flex flex-col min-h-screen  overflow-y-scroll items-center justify-center py-10">
+      <ScreenLoader
+        open={isLoading}
+        message={"Signing you up"}
+      />
       <h1 className="font-semibold text-2xl py-4">Sign Up</h1>
       <AuthForm
         //  @ts-expect-error type

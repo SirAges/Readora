@@ -42,7 +42,10 @@ const Page = () => {
 
   return (
     <>
-      {<ScreenLoader open={isLoading} />}
+      <ScreenLoader
+        open={isLoading}
+        message={"Verifying your email"}
+      />
       <div className="flex flex-col items-center justify-center w-full h-screen space-y-5">
         <h1 className="text-5xl font-black tracking-widest uppercase">
           Readora
