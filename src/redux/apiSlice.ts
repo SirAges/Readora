@@ -15,7 +15,7 @@ const baseQuery: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  const state = api.getState() as RootState; // Type the api object correctly as RootState
+  const state = api.getState() as RootState;
   const token = state.auth.token;
   const baseQueryFunction = fetchBaseQuery({
     baseUrl: BASE_URL,
@@ -27,6 +27,7 @@ const baseQuery: BaseQueryFn<
   });
 
   let result = await baseQueryFunction(args, api, extraOptions);
+
   if (result?.error?.status === 403) {
     console.log("Access token expired, attempting refresh");
 
@@ -38,11 +39,20 @@ const baseQuery: BaseQueryFn<
       api,
       extraOptions
     );
+
     console.log("refreshResult", refreshResult);
+
     // @ts-expect-error maybe empty {}
     if (refreshResult?.data?.success) {
       // @ts-expect-error maybe empty {}
       api.dispatch(setCredentials(refreshResult.data.data));
+
+      // Invalidate all relevant tags to force refetch
+      api.dispatch(
+        apiSlice.util.invalidateTags(["User", "Book", "Borrow", "Review"])
+      );
+
+      // Retry original request
       result = await baseQueryFunction(args, api, extraOptions);
     } else {
       if (refreshResult?.error?.status === 400) {
