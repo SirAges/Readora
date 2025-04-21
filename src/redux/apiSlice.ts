@@ -49,7 +49,7 @@ const baseQuery: BaseQueryFn<
 
       // Invalidate all relevant tags to force refetch
       api.dispatch(
-        apiSlice.util.invalidateTags(["User", "Book", "Borrow", "Review"])
+        apiSlice.util.invalidateTags(["Book"])
       );
 
       // Retry original request
