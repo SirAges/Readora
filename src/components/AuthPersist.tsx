@@ -16,7 +16,7 @@ const AuthPersist = ({ children }: AuthPersistProps) => {
   const token = useAppSelector(selectCurrentToken);
   const [refreshToken, { isLoading }] = useRefreshTokenMutation();
   const { persist, hasHydrated } = usePersistStore();
-  const [calledRefresh, setCalledRefresh] = useState(false);
+  const [refreshTried, setRefreshTried] = useState(false);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -25,27 +25,28 @@ const AuthPersist = ({ children }: AuthPersistProps) => {
       try {
         await refreshToken("").unwrap();
       } catch (err) {
-        console.log("Refresh token error:", err);
+        console.log("Failed to refresh:", err);
       } finally {
-        setCalledRefresh(true);
+        setRefreshTried(true);
       }
     };
 
     if (persist && !token) {
       verifyRefreshToken();
     } else {
-      setCalledRefresh(true); // Either token is present or persist is off
+      setRefreshTried(true);
     }
-  }, [persist, token, hasHydrated, refreshToken]);
+  }, [persist, token, hasHydrated]);
 
-  if (!token && calledRefresh) {
+  // Prevent redirect until store is hydrated and refresh was attempted
+  if (hasHydrated && refreshTried && !token) {
     redirect("/auth/sign-in");
   }
 
   return (
     <>
-      <ScreenLoader open={isLoading || !calledRefresh || !hasHydrated} />
-      {calledRefresh && hasHydrated && children}
+      <ScreenLoader open={isLoading || !hasHydrated || !refreshTried} />
+      {hasHydrated && refreshTried && children}
     </>
   );
 };
