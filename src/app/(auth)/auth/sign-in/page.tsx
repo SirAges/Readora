@@ -34,8 +34,8 @@ export default function Home() {
         onSubmit={onSubmit}
         isLoading={isLoading}
         defaultValues={{
-          email: "ekele19stephen96u@gmail.com",
-          password: "password",
+          email: "",
+          password: "",
         }}
         name="sign_in"
       />
