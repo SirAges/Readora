@@ -1,6 +1,6 @@
 import AdminHome from "@/components/admin/AdminHome";
 import type { Metadata } from "next";
-
+import AuthPersist from "@/components/AuthPersist";
 export const metadata: Metadata = {
  title: "Readora Admin Dashboard",
   description: "Readora e-library system",
@@ -11,5 +11,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <AdminHome>{children}</AdminHome>;
+  return <AuthPersist><AdminHome>{children}</AdminHome></AuthPersist>;
 }
