@@ -38,8 +38,10 @@ const baseQuery: BaseQueryFn<
       api,
       extraOptions
     );
-    if (refreshResult?.data) {
-      api.dispatch(setCredentials(refreshResult.data));
+    // @ts-expect-error maybe empty {}
+    if (refreshResult?.data?.success) {
+      // @ts-expect-error maybe empty {}
+      api.dispatch(setCredentials(refreshResult.data.data));
       result = await baseQueryFunction(args, api, extraOptions);
     } else {
       if (refreshResult?.error?.status === 400) {

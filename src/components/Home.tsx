@@ -9,7 +9,7 @@ const Home = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const { userId } = useAuth();
+  const { userId,  } = useAuth();
 
   return (
     <div className="flex h-full w-full">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, ReactNode, useState } from "react";
+import { useEffect, ReactNode } from "react";
 import { useAppSelector } from "@/hooks/reduxHooks";
 import { useRefreshTokenMutation } from "@/redux/features/auth/authApiSlice";
 import { selectCurrentToken } from "@/redux/features/auth/authSlice";
@@ -16,23 +16,23 @@ const AuthPersist = ({ children }: AuthPersistProps) => {
   const token = useAppSelector(selectCurrentToken);
   const [refreshToken, { isLoading }] = useRefreshTokenMutation();
   const { persist } = usePersistStore();
-  const [tokenRefreshed, setTokenRefreshed] = useState(false);
   useEffect(() => {
     const verifyRefreshToken = async () => {
       try {
         await refreshToken("").unwrap();
-        setTokenRefreshed(true);
       } catch (err) {
         console.log("err", err);
       }
     };
+
     if (persist && !token) {
       verifyRefreshToken();
     }
   }, [persist, token]);
-  if (!token && tokenRefreshed) {
+  if (!token && !isLoading) {
     redirect("/auth/sign-in");
   }
+
   return (
     <>
       <ScreenLoader open={isLoading} />

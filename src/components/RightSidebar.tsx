@@ -9,7 +9,7 @@ import { useGetBookQuery } from "@/redux/features/book/bookApiSlice";
 const RightSidebar = () => {
   const [book, setBook] = useState<Book | null>(null);
   const min = 2;
-  const max = 300;
+  const max = 100;
   const randomId = useRef<number>(
     Math.floor(Math.random() * (max - min + 1)) + min
   );

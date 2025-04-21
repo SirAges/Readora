@@ -188,7 +188,7 @@ const Page = () => {
                               render={({ field }) => (
                                 <FormItem className="w-full gap-y-3">
                                   <div className="flex items-center w-full gap-x-2">
-                                    <div className=" max-w-12">
+                                    <div className="min-w-12 max-w-12">
                                       <FormLabel className="hidden">
                                         Rating
                                       </FormLabel>
@@ -207,7 +207,7 @@ const Page = () => {
                                     </div>
                                     <Button
                                       type="submit"
-                                      className="cursor-pointer w-full font-semibold text-white capitalize"
+                                      className="cursor-pointer flex-1 font-semibold text-white capitalize"
                                     >
                                       {isLoading ? (
                                         <p className="flex items-center justify-center">

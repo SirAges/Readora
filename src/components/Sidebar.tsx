@@ -37,7 +37,7 @@ const SideBar = ({ isMobile }: { isMobile?: boolean }) => {
   return (
     <div
       className={cn(
-        "sm:flex sticky top-0 max-h-screen min-h-screen",
+        "sm:flex sticky top-0 max-h-screen grow",
         isMobile ? "" : "hidden"
       )}
     >
@@ -52,7 +52,7 @@ const SideBar = ({ isMobile }: { isMobile?: boolean }) => {
           </h1>
         </Link>
 
-        <div className="flex flex-col flex-1 space-y-3 justify-between py-5">
+        <div className="flex flex-col h-full space-y-3 justify-between py-5">
           {sidebarItem.map(({ Icon, id, link, name }) => {
             const isActive = link.includes("?")
               ? fullPath === link
