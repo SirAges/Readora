@@ -14,24 +14,29 @@ interface AuthPersistProps {
 
 const AuthPersist = ({ children }: AuthPersistProps) => {
   const token = useAppSelector(selectCurrentToken);
-  const [refreshToken, { isLoading }] = useRefreshTokenMutation();
+  const [refreshToken, { isLoading, isSuccess, isError }] = useRefreshTokenMutation();
   const { persist } = usePersistStore();
-  const [tokenRefreshed, setTokenRefreshed] = useState(false);
+  const [calledRefresh, setCalledRefresh] = useState(false);
+
   useEffect(() => {
     const verifyRefreshToken = async () => {
       try {
-        await refreshToken("")
-        setTokenRefreshed(true);
+        await refreshToken("").unwrap();
       } catch (err) {
-        console.log("err", err);
+        console.log("Refresh token failed:", err);
+      } finally {
+        setCalledRefresh(true);
       }
     };
 
     if (persist && !token) {
       verifyRefreshToken();
+    } else {
+      setCalledRefresh(true); // Token already exists or no persist
     }
-  }, [persist, token]);
-  if (!token && tokenRefreshed) {
+  }, [persist, token, refreshToken]);
+
+  if (!token && calledRefresh && !isLoading) {
     redirect("/auth/sign-in");
   }
 
