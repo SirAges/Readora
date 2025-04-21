@@ -47,8 +47,8 @@ const SideBar = ({ isMobile }: { isMobile?: boolean }) => {
           className="relative flex items-center cursor-pointer"
         >
           <h1 className="text-lg hidden md:flex">
-            <span className="font-semibold px-1 text-primary text-xl">La</span>
-            Book
+            <span className="font-semibold px-1 text-primary text-xl">Re</span>
+            dora
           </h1>
         </Link>
 
