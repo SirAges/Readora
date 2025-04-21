@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, ReactNode, useState } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { useAppSelector } from "@/hooks/reduxHooks";
 import { useRefreshTokenMutation } from "@/redux/features/auth/authApiSlice";
 import { selectCurrentToken } from "@/redux/features/auth/authSlice";
@@ -14,16 +14,18 @@ interface AuthPersistProps {
 
 const AuthPersist = ({ children }: AuthPersistProps) => {
   const token = useAppSelector(selectCurrentToken);
-  const [refreshToken, { isLoading, isSuccess, isError }] = useRefreshTokenMutation();
-  const { persist } = usePersistStore();
+  const [refreshToken, { isLoading }] = useRefreshTokenMutation();
+  const { persist, hasHydrated } = usePersistStore();
   const [calledRefresh, setCalledRefresh] = useState(false);
 
   useEffect(() => {
+    if (!hasHydrated) return;
+
     const verifyRefreshToken = async () => {
       try {
         await refreshToken("").unwrap();
       } catch (err) {
-        console.log("Refresh token failed:", err);
+        console.log("Refresh token error:", err);
       } finally {
         setCalledRefresh(true);
       }
@@ -32,18 +34,18 @@ const AuthPersist = ({ children }: AuthPersistProps) => {
     if (persist && !token) {
       verifyRefreshToken();
     } else {
-      setCalledRefresh(true); // Token already exists or no persist
+      setCalledRefresh(true); // Either token is present or persist is off
     }
-  }, [persist, token, refreshToken]);
+  }, [persist, token, hasHydrated, refreshToken]);
 
-  if (!token && calledRefresh && !isLoading) {
+  if (!token && calledRefresh) {
     redirect("/auth/sign-in");
   }
 
   return (
     <>
-      <ScreenLoader open={isLoading} />
-      {children}
+      <ScreenLoader open={isLoading || !calledRefresh || !hasHydrated} />
+      {calledRefresh && hasHydrated && children}
     </>
   );
 };
