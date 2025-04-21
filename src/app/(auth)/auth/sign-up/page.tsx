@@ -38,10 +38,10 @@ export default function Home() {
         onSubmit={onSubmit}
         isLoading={isLoading}
         defaultValues={{
-          email: "ekele19stephen96u@gmail.com",
-          password: "password",
-          firstName: "John",
-          lastName: "Smith",
+          email: "",
+          password: "",
+          firstName: "",
+          lastName: "",
           idCardUrl: "file",
         }}
         name="sign_up"
