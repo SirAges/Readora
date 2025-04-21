@@ -38,6 +38,7 @@ const baseQuery: BaseQueryFn<
       api,
       extraOptions
     );
+    console.log("refreshResult", refreshResult);
     // @ts-expect-error maybe empty {}
     if (refreshResult?.data?.success) {
       // @ts-expect-error maybe empty {}

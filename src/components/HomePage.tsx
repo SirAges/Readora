@@ -17,11 +17,9 @@ const HomePage = () => {
     page: randomPage.current,
     limit: 24,
   });
-      console.log("data", data);
 
   useEffect(() => {
     if (data?.success) {
-      console.log('data', data)
       setBooks(data.data.book);
     }
     return () => {};
