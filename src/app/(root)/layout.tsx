@@ -1,5 +1,6 @@
-import FallBack from "@/components/FallBack";
+import AuthPersist from "@/components/AuthPersist";
 import Home from "@/components/Home";
+import ScreenLoader from "@/components/ScreenLoader";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -14,8 +15,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Suspense fallback={<FallBack />}>
-      <Home>{children}</Home>
+    <Suspense fallback={<ScreenLoader open={true} />}>
+      <AuthPersist>
+        <Home>{children}</Home>
+      </AuthPersist>
     </Suspense>
   );
 }

@@ -10,18 +10,14 @@ const Home = ({
   children: React.ReactNode;
 }>) => {
   const { userId } = useAuth();
-  // if (!isSignedIn) redirect("/auth/sign-in");
+
   return (
     <div className="flex h-full w-full">
       <Sidebar />
       <div className="flex flex-col w-full">
-        <Header userId={userId!}/>
+        <Header userId={userId!} />
 
-        <div
-          className="w-full flex flex-col items-center "
-        >
-          {children}
-        </div>
+        <div className="w-full flex flex-col items-center ">{children}</div>
       </div>
     </div>
   );

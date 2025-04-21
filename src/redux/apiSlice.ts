@@ -27,7 +27,6 @@ const baseQuery: BaseQueryFn<
   });
 
   let result = await baseQueryFunction(args, api, extraOptions);
-
   if (result?.error?.status === 403) {
     console.log("Access token expired, attempting refresh");
 
@@ -35,17 +34,15 @@ const baseQuery: BaseQueryFn<
       {
         url: "/auth/refresh-token",
         method: "POST",
-       
       },
       api,
       extraOptions
     );
-
     if (refreshResult?.data) {
       api.dispatch(setCredentials(refreshResult.data));
       result = await baseQueryFunction(args, api, extraOptions);
     } else {
-      if (refreshResult?.error?.status === 403) {
+      if (refreshResult?.error?.status === 400) {
         console.log("Refresh token expired. Logging out.");
         api.dispatch(setCredentials(null));
       }
