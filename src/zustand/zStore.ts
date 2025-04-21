@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 
 interface PersistStore {
   persist: boolean;
-  setPersist: (value: boolean) => void;
+  togglePersist: () => void;
   hasHydrated: boolean;
   setHasHydrated: (value: boolean) => void;
 }
@@ -13,7 +13,7 @@ export const usePersistStore = create<PersistStore>()(
     (set) => ({
       persist: true,
       hasHydrated: false,
-      setPersist: (value) => set({ persist: value }),
+      togglePersist: () => set((state) => ({ persist: !state.persist })),
       setHasHydrated: (value) => set({ hasHydrated: value }),
     }),
     {
