@@ -7,7 +7,6 @@ import { selectCurrentToken } from "@/redux/features/auth/authSlice";
 import { usePersistStore } from "@/zustand/zStore";
 import ScreenLoader from "./ScreenLoader";
 import { redirect } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
 
 interface AuthPersistProps {
   children: ReactNode;
