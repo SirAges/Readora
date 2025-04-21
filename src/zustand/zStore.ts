@@ -1,17 +1,26 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-interface PersistState {
+
+interface PersistStore {
   persist: boolean;
-  setPersist: () => void;
+  setPersist: (value: boolean) => void;
+  hasHydrated: boolean;
+  setHasHydrated: (value: boolean) => void;
 }
-export const usePersistStore = create<PersistState>()(
+
+export const usePersistStore = create<PersistStore>()(
   persist(
     (set) => ({
-      persist: false,
-      setPersist: () => set((state) => ({ persist: !state.persist })),
+      persist: true,
+      hasHydrated: false,
+      setPersist: (value) => set({ persist: value }),
+      setHasHydrated: (value) => set({ hasHydrated: value }),
     }),
     {
-      name: "persit_readora",
+      name: "persist-store",
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
