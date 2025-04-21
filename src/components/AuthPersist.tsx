@@ -20,7 +20,7 @@ const AuthPersist = ({ children }: AuthPersistProps) => {
   useEffect(() => {
     const verifyRefreshToken = async () => {
       try {
-        await refreshToken("").unwrap();
+        await refreshToken("")
         setTokenRefreshed(true);
       } catch (err) {
         console.log("err", err);
