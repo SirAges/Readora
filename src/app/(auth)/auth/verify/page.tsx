@@ -5,7 +5,7 @@ import { useVerifyEmailMutation } from "@/redux/features/auth/authApiSlice";
 import { redirect, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
-
+import Link from "next/link"
 const Page = () => {
   const [verifyEmail, { isLoading }] = useVerifyEmailMutation();
   const searchParams = useSearchParams();
@@ -20,9 +20,9 @@ const Page = () => {
             otp,
             email,
           }).unwrap();
-          if (success) {
+  
             redirect("/auth/sign-in");
-          }
+          
         }
       } else {
         toast("You do not have sufficient credentials to be verified");
@@ -57,6 +57,12 @@ const Page = () => {
         >
           retry
         </p>
+        <Link href="/auth/sign-in"
+        
+          className="font-semibold capitalize text-2xl cursor-pointer py-5"
+        >
+          Sign in
+        </Link>
       </div>
     </>
   );
